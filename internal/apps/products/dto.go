@@ -1,12 +1,13 @@
-package model
+package products
 
-type Product struct {
-	Common
+type ProductRequestParams struct {
+	ID int
+}
 
+type ProductRequestBody struct {
 	CategoryID  int    `json:"category_id"`
 	Name        string `json:"name"`
 	Stock       int    `json:"stock"`
 	Price       int    `json:"price"`
-	Image       string `json:"image"`
 	Description string `json:"description"`
 }

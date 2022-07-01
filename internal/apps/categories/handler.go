@@ -37,7 +37,7 @@ func (h handler) GetAll(e echo.Context) error {
 
 func (h handler) GetById(e echo.Context) error {
 	id, _ := strconv.Atoi(e.Param("id"))
-	category, err := h.repository.GetById(id)
+	category, err := h.repository.GetById(uint(id))
 	if err != nil || category.ID == 0 {
 		return e.JSON(http.StatusNotFound, map[string]interface{}{
 			"status":  false,
@@ -82,7 +82,7 @@ func (h handler) Update(e echo.Context) error {
 		})
 	}
 
-	category, err := h.repository.Update(id, updatedData)
+	category, err := h.repository.Update(uint(id), updatedData)
 	if err != nil {
 		return e.JSON(http.StatusBadRequest, map[string]interface{}{
 			"status":  false,
@@ -98,7 +98,7 @@ func (h handler) Update(e echo.Context) error {
 
 func (h handler) Delete(e echo.Context) error {
 	id, _ := strconv.Atoi(e.Param("id"))
-	_, err := h.repository.Delete(id)
+	_, err := h.repository.Delete(uint(id))
 	if err != nil {
 		return e.JSON(http.StatusBadRequest, map[string]interface{}{
 			"status":  false,

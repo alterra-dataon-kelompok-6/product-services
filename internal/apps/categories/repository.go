@@ -2,6 +2,7 @@ package categories
 
 import (
 	model "belajar-go-echo/internal/models"
+	"errors"
 
 	"gorm.io/gorm"
 )
@@ -9,9 +10,9 @@ import (
 type Repository interface {
 	Create(category model.Category) (*model.Category, error)
 	GetAll() (*[]model.Category, error)
-	GetById(id int) (*model.Category, error)
-	Update(id int, category map[string]interface{}) (*model.Category, error)
-	Delete(id int) (bool, error)
+	GetById(id uint) (*model.Category, error)
+	Update(id uint, category map[string]interface{}) (*model.Category, error)
+	Delete(id uint) (bool, error)
 }
 
 type repository struct {
@@ -37,7 +38,7 @@ func (r *repository) GetAll() (*[]model.Category, error) {
 	return &categories, nil
 }
 
-func (r *repository) GetById(id int) (*model.Category, error) {
+func (r *repository) GetById(id uint) (*model.Category, error) {
 	var category model.Category
 	if err := r.DB.Where("id = ?", id).Find(&category).Error; err != nil {
 		return nil, err
@@ -45,22 +46,28 @@ func (r *repository) GetById(id int) (*model.Category, error) {
 	return &category, nil
 }
 
-func (r *repository) Update(id int, updatedData map[string]interface{}) (*model.Category, error) {
-	var category model.Category
+func (r *repository) Update(id uint, updatedData map[string]interface{}) (*model.Category, error) {
+	if category, _ := r.GetById(id); category.ID <= 0 {
+		return nil, errors.New("data not found")
+	}
+	var newCategory model.Category
 	if err := r.DB.Model(model.Category{}).Where("id = ?", id).Updates(updatedData).Error; err != nil {
 		return nil, err
 	}
 
-	if err := r.DB.Where("id = ?", id).Find(&category).Error; err != nil {
+	if err := r.DB.Where("id = ?", id).Find(&newCategory).Error; err != nil {
 		return nil, err
 	}
 
-	return &category, nil
+	return &newCategory, nil
 }
 
-func (r *repository) Delete(id int) (bool, error) {
-	if err := r.DB.Delete(model.Category{}, id).Error; err != nil {
-		return false, err
+func (r *repository) Delete(id uint) (bool, error) {
+	if category, _ := r.GetById(id); category.ID <= 0 {
+		return false, errors.New("data not found")
+	}
+	if err := r.DB.Debug().Where("id = ?", id).Delete(&model.Category{}).Error; err != nil {
+		return false, errors.New("failed to delete data")
 	}
 
 	return true, nil

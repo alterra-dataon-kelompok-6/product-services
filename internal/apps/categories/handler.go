@@ -22,7 +22,7 @@ func NewHandler(f *factory.Factory) *handler {
 func (h handler) GetAll(e echo.Context) error {
 	categories, err := h.repository.GetAll()
 
-	if err != nil {
+	if err != nil || len(*categories) <= 0 {
 		return e.JSON(http.StatusNotFound, map[string]interface{}{
 			"status":  false,
 			"message": "data not found",
@@ -38,7 +38,7 @@ func (h handler) GetAll(e echo.Context) error {
 func (h handler) GetById(e echo.Context) error {
 	id, _ := strconv.Atoi(e.Param("id"))
 	category, err := h.repository.GetById(id)
-	if err != nil {
+	if err != nil || category.ID == 0 {
 		return e.JSON(http.StatusNotFound, map[string]interface{}{
 			"status":  false,
 			"message": "data not found",

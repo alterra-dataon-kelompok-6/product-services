@@ -1,8 +1,9 @@
 package products
 
 import (
-	model "belajar-go-echo/internal/models"
 	"errors"
+
+	model "product-services/internal/models"
 
 	"gorm.io/gorm"
 )

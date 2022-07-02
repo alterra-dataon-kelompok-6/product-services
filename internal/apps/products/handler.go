@@ -1,10 +1,12 @@
 package products
 
 import (
-	"belajar-go-echo/internal/factory"
-	model "belajar-go-echo/internal/models"
 	"net/http"
 	"strconv"
+
+	"product-services/internal/apps/categories"
+	"product-services/internal/factory"
+	model "product-services/internal/models"
 
 	"github.com/labstack/echo/v4"
 )
@@ -44,9 +46,18 @@ func (h handler) GetById(e echo.Context) error {
 			"message": "data not found",
 		})
 	}
+	categoryRepo := categories.NewRepo(factory.NewFactory().DB)
+	category, _ := categoryRepo.GetById(uint(product.CategoryID))
+
 	return e.JSON(http.StatusOK, map[string]interface{}{
 		"status": true,
-		"data":   product,
+		"data": map[string]interface{}{
+			"product": product,
+			"category": map[string]interface{}{
+				"category_id": category.ID,
+				"category":    category.Category,
+			},
+		},
 	})
 }
 

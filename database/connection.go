@@ -1,10 +1,11 @@
 package database
 
 import (
-	model "belajar-go-echo/internal/models"
-	"belajar-go-echo/libs/env"
 	"fmt"
 	"log"
+
+	model "product-services/internal/models"
+	"product-services/libs/env"
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"

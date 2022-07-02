@@ -1,9 +1,9 @@
 package main
 
 import (
-	"belajar-go-echo/internal/factory"
-	"belajar-go-echo/internal/http"
-	m "belajar-go-echo/middleware"
+	"product-services/internal/factory"
+	"product-services/internal/http"
+	m "product-services/middleware"
 
 	"github.com/labstack/echo/v4"
 )

@@ -1,9 +1,9 @@
 package http
 
 import (
-	"belajar-go-echo/internal/apps/categories"
-	"belajar-go-echo/internal/apps/products"
-	"belajar-go-echo/internal/factory"
+	"product-services/internal/apps/categories"
+	"product-services/internal/apps/products"
+	"product-services/internal/factory"
 
 	"github.com/labstack/echo/v4"
 )

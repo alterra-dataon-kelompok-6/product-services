@@ -1,10 +1,11 @@
 package categories
 
 import (
-	"belajar-go-echo/internal/factory"
-	model "belajar-go-echo/internal/models"
 	"net/http"
 	"strconv"
+
+	"product-services/internal/factory"
+	model "product-services/internal/models"
 
 	"github.com/labstack/echo/v4"
 )

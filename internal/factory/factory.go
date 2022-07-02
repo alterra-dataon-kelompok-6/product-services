@@ -1,7 +1,7 @@
 package factory
 
 import (
-	"belajar-go-echo/database"
+	"product-services/database"
 
 	"gorm.io/gorm"
 )

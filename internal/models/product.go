@@ -10,8 +10,3 @@ type Product struct {
 	Image       string `json:"image"`
 	Description string `json:"description"`
 }
-
-type Category struct {
-	Common
-	Name string `json:"name"`
-}

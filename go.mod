@@ -1,4 +1,4 @@
-module belajar-go-echo
+module product-services
 
 go 1.18
 

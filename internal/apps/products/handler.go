@@ -1,10 +1,12 @@
 package products
 
 import (
-	"belajar-go-echo/internal/factory"
-	model "belajar-go-echo/internal/models"
 	"net/http"
 	"strconv"
+
+	"product-services/internal/apps/categories"
+	"product-services/internal/factory"
+	model "product-services/internal/models"
 
 	"github.com/labstack/echo/v4"
 )
@@ -22,7 +24,7 @@ func NewHandler(f *factory.Factory) *handler {
 func (h handler) GetAll(e echo.Context) error {
 	products, err := h.repository.GetAll()
 
-	if err != nil {
+	if err != nil || len(*products) <= 0 {
 		return e.JSON(http.StatusNotFound, map[string]interface{}{
 			"status":  false,
 			"message": "data not found",
@@ -37,16 +39,25 @@ func (h handler) GetAll(e echo.Context) error {
 
 func (h handler) GetById(e echo.Context) error {
 	id, _ := strconv.Atoi(e.Param("id"))
-	product, err := h.repository.GetById(id)
-	if err != nil {
+	product, err := h.repository.GetById(uint(id))
+	if err != nil || product.ID == 0 {
 		return e.JSON(http.StatusNotFound, map[string]interface{}{
 			"status":  false,
 			"message": "data not found",
 		})
 	}
+	categoryRepo := categories.NewRepo(factory.NewFactory().DB)
+	category, _ := categoryRepo.GetById(uint(product.CategoryID))
+
 	return e.JSON(http.StatusOK, map[string]interface{}{
 		"status": true,
-		"data":   product,
+		"data": map[string]interface{}{
+			"product": product,
+			"category": map[string]interface{}{
+				"category_id": category.ID,
+				"category":    category.Category,
+			},
+		},
 	})
 }
 
@@ -82,7 +93,7 @@ func (h handler) Update(e echo.Context) error {
 		})
 	}
 
-	product, err := h.repository.Update(id, updatedData)
+	product, err := h.repository.Update(uint(id), updatedData)
 	if err != nil {
 		return e.JSON(http.StatusBadRequest, map[string]interface{}{
 			"status":  false,
@@ -98,7 +109,7 @@ func (h handler) Update(e echo.Context) error {
 
 func (h handler) Delete(e echo.Context) error {
 	id, _ := strconv.Atoi(e.Param("id"))
-	_, err := h.repository.Delete(id)
+	_, err := h.repository.Delete(uint(id))
 	if err != nil {
 		return e.JSON(http.StatusBadRequest, map[string]interface{}{
 			"status":  false,

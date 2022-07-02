@@ -1,10 +1,11 @@
 package categories
 
 import (
-	"belajar-go-echo/internal/factory"
-	model "belajar-go-echo/internal/models"
 	"net/http"
 	"strconv"
+
+	"product-services/internal/factory"
+	model "product-services/internal/models"
 
 	"github.com/labstack/echo/v4"
 )
@@ -22,7 +23,7 @@ func NewHandler(f *factory.Factory) *handler {
 func (h handler) GetAll(e echo.Context) error {
 	categories, err := h.repository.GetAll()
 
-	if err != nil {
+	if err != nil || len(*categories) <= 0 {
 		return e.JSON(http.StatusNotFound, map[string]interface{}{
 			"status":  false,
 			"message": "data not found",
@@ -37,8 +38,8 @@ func (h handler) GetAll(e echo.Context) error {
 
 func (h handler) GetById(e echo.Context) error {
 	id, _ := strconv.Atoi(e.Param("id"))
-	category, err := h.repository.GetById(id)
-	if err != nil {
+	category, err := h.repository.GetById(uint(id))
+	if err != nil || category.ID == 0 {
 		return e.JSON(http.StatusNotFound, map[string]interface{}{
 			"status":  false,
 			"message": "data not found",
@@ -82,7 +83,7 @@ func (h handler) Update(e echo.Context) error {
 		})
 	}
 
-	category, err := h.repository.Update(id, updatedData)
+	category, err := h.repository.Update(uint(id), updatedData)
 	if err != nil {
 		return e.JSON(http.StatusBadRequest, map[string]interface{}{
 			"status":  false,
@@ -98,7 +99,7 @@ func (h handler) Update(e echo.Context) error {
 
 func (h handler) Delete(e echo.Context) error {
 	id, _ := strconv.Atoi(e.Param("id"))
-	_, err := h.repository.Delete(id)
+	_, err := h.repository.Delete(uint(id))
 	if err != nil {
 		return e.JSON(http.StatusBadRequest, map[string]interface{}{
 			"status":  false,

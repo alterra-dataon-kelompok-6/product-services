@@ -5,5 +5,5 @@ type CategoryRequestParams struct {
 }
 
 type CategoryRequestBody struct {
-	Category string `json:"category"`
+	Category string `json:"category" validate:"required"`
 }

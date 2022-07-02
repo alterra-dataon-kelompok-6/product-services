@@ -28,10 +28,10 @@ jobs:
         password: ${{ secrets.DOCKERHUB_TOKEN }}
     - name: Build Image
       run: |
-        docker build . -t saahalla/saahalla/product-services:0.0.1
+        docker build . -t saahalla/saahalla/product-services:1.0.0
     - name: Docker Push
       run: |
-        docker push saahalla/saahalla/product-services:0.0.1
+        docker push saahalla/saahalla/product-services:1.0.0
     - name: configure ssh
       env:
         SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
@@ -51,4 +51,4 @@ jobs:
     #- name: stop running container
     #  run: ssh staging 'sudo docker container stop learn && sudo docker container rm learn'
     - name: deploy application
-      run: ssh staging 'sudo docker pull saahalla/saahalla/product-services:0.0.1 && sudo docker run -d -p 8088:8088 --name learn-ci --network local-network saahalla/saahalla/product-services:0.0.1'
+      run: ssh staging 'sudo docker rm -f product-services && sudo docker pull saahalla/saahalla/product-services:1.0.0 && sudo docker run -d -p 8088:8088 --name learn-ci --network local-network saahalla/saahalla/product-services:1.0.0'

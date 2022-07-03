@@ -15,7 +15,7 @@ var dbConn *gorm.DB
 
 type Tables []interface{}
 
-var tables Tables = Tables{&model.Product{}, &model.Category{}}
+var tables Tables = Tables{&model.Product{}, &model.Category{}, &model.Review{}}
 
 func init() {
 	dbConn = ConnectDB()

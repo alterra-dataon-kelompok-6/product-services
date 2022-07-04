@@ -1,5 +1,7 @@
 package dto
 
+import model "product-services/internal/models"
+
 type ReviewRequestParams struct {
 	ID uint
 }
@@ -15,4 +17,9 @@ type ReviewRequestBodyCreate struct {
 type ReviewRequestBodyUpdate struct {
 	Rating uint   `json:"rating" validate:"required"`
 	Review string `json:"review"`
+}
+
+type ReviewResponseBodyCreate struct {
+	Status bool
+	Data   model.Review
 }

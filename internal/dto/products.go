@@ -1,7 +1,7 @@
 package dto
 
 type ProductRequestParams struct {
-	ID uint
+	ID uint `json:"id" param:"id" query:"id" form:"id" xml:"id"`
 }
 
 type ProductRequestBodyCreate struct {

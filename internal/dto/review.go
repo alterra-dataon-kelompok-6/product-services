@@ -3,7 +3,7 @@ package dto
 import model "product-services/internal/models"
 
 type ReviewRequestParams struct {
-	ID uint
+	ID uint `json:"id" param:"id" query:"id" form:"id" xml:"id"`
 }
 
 type ReviewRequestBodyCreate struct {

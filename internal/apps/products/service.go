@@ -7,25 +7,28 @@ import (
 	"product-services/internal/dto"
 	"product-services/internal/factory"
 	model "product-services/internal/models"
+	"product-services/internal/repository"
 )
 
 type Service interface {
 	Create(payload dto.ProductRequestBodyCreate) (*model.Product, error)
 	GetAll() (*[]model.Product, error)
-	GetById(payload dto.ProductRequestParams) (*model.Product, error)
+	GetById(payload dto.ProductRequestParams) (*dto.ProductResponseGetById, error)
 	Update(id uint, payload dto.ProductRequestBodyUpdate) (*model.Product, error)
 	Delete(payload dto.ProductRequestParams) (interface{}, error)
 }
 
 type service struct {
-	ProductRepository Repository
+	ProductRepository repository.ProductRepository
 }
 
 func NewService(f *factory.Factory) Service {
 	return &service{
-		ProductRepository: NewRepo(f.DB),
+		ProductRepository: repository.NewProductRepo(f.DB),
 	}
 }
+
+var CategoryRepo = repository.NewCategoryRepo(factory.NewFactory().DB)
 
 func (s service) Create(payload dto.ProductRequestBodyCreate) (*model.Product, error) {
 	var newProduct = model.Product{
@@ -52,13 +55,25 @@ func (s service) GetAll() (*[]model.Product, error) {
 	return products, nil
 }
 
-func (s service) GetById(payload dto.ProductRequestParams) (*model.Product, error) {
+func (s service) GetById(payload dto.ProductRequestParams) (*dto.ProductResponseGetById, error) {
 	product, err := s.ProductRepository.GetById(payload.ID)
 	if err != nil || product.ID == 0 {
 		log.Println(err, product, payload)
 		return nil, errors.New("data not found")
 	}
-	return product, nil
+	result := new(dto.ProductResponseGetById)
+	result.Product = *product
+
+	// get category by product.category_id
+	category, err := CategoryRepo.GetById(product.CategoryID)
+	if err != nil {
+		return nil, err
+	}
+
+	result.Category.Category = category.Category
+	result.Category.CategoryID = category.ID
+
+	return result, nil
 }
 
 func (s service) Update(id uint, payload dto.ProductRequestBodyUpdate) (*model.Product, error) {

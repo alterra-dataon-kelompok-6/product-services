@@ -4,7 +4,6 @@ import (
 	"log"
 	"net/http"
 
-	"product-services/internal/apps/categories"
 	"product-services/internal/dto"
 	"product-services/internal/factory"
 
@@ -51,18 +50,12 @@ func (h handler) GetById(e echo.Context) error {
 			"message": "data not found",
 		})
 	}
-	categoryRepo := categories.NewRepo(factory.NewFactory().DB)
-	category, _ := categoryRepo.GetById(uint(product.CategoryID))
+	// categoryRepo := categories.NewRepo(factory.NewFactory().DB)
+	// category, _ := categoryRepo.GetById(uint(product.CategoryID))
 
 	return e.JSON(http.StatusOK, map[string]interface{}{
 		"status": true,
-		"data": map[string]interface{}{
-			"product": product,
-			"category": map[string]interface{}{
-				"category_id": category.ID,
-				"category":    category.Category,
-			},
-		},
+		"data":   product,
 	})
 }
 

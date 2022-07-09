@@ -6,6 +6,7 @@ import (
 	"product-services/internal/dto"
 	"product-services/internal/factory"
 	model "product-services/internal/models"
+	"product-services/internal/repository"
 )
 
 type Service interface {
@@ -17,18 +18,21 @@ type Service interface {
 }
 
 type service struct {
-	ReviewRepository Repository
+	ReviewRepository repository.ReviewRepository
 }
 
 func NewService(f *factory.Factory) Service {
 	return &service{
-		ReviewRepository: NewRepo(f.DB),
+		ReviewRepository: repository.NewReveiewRepo(f.DB),
 	}
 }
 
 func (s service) Create(payload dto.ReviewRequestBodyCreate) (*model.Review, error) {
 	var newReview = model.Review{
-		Review: payload.Review,
+		CustomerID: payload.CustomerID,
+		ProductID:  payload.ProductID,
+		Rating:     payload.Rating,
+		Review:     payload.Review,
 	}
 
 	review, err := s.ReviewRepository.Create(newReview)
@@ -57,6 +61,9 @@ func (s service) GetById(payload dto.ReviewRequestParams) (*model.Review, error)
 func (s service) Update(id uint, payload dto.ReviewRequestBodyUpdate) (*model.Review, error) {
 	var updatedData map[string]interface{} = make(map[string]interface{})
 
+	if payload.Rating != 0 {
+		updatedData["rating"] = payload.Rating
+	}
 	if payload.Review != "" {
 		updatedData["review"] = payload.Review
 	}

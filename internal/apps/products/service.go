@@ -4,10 +4,10 @@ import (
 	"errors"
 	"log"
 
-	"product-services/internal/apps/categories"
 	"product-services/internal/dto"
 	"product-services/internal/factory"
 	model "product-services/internal/models"
+	"product-services/internal/repository"
 )
 
 type Service interface {
@@ -19,16 +19,16 @@ type Service interface {
 }
 
 type service struct {
-	ProductRepository Repository
+	ProductRepository repository.ProductRepository
 }
 
 func NewService(f *factory.Factory) Service {
 	return &service{
-		ProductRepository: NewRepo(f.DB),
+		ProductRepository: repository.NewProductRepo(f.DB),
 	}
 }
 
-var CategoryRepo = categories.NewRepo(factory.NewFactory().DB)
+var CategoryRepo = repository.NewCategoryRepo(factory.NewFactory().DB)
 
 func (s service) Create(payload dto.ProductRequestBodyCreate) (*model.Product, error) {
 	var newProduct = model.Product{

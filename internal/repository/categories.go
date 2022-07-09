@@ -1,4 +1,4 @@
-package categories
+package repository
 
 import (
 	"errors"
@@ -8,7 +8,7 @@ import (
 	"gorm.io/gorm"
 )
 
-type Repository interface {
+type CategoryRepository interface {
 	Create(category model.Category) (*model.Category, error)
 	GetAll() (*[]model.Category, error)
 	GetById(id uint) (*model.Category, error)
@@ -16,22 +16,22 @@ type Repository interface {
 	Delete(id uint) (bool, error)
 }
 
-type repository struct {
+type categoryRepository struct {
 	DB *gorm.DB
 }
 
-func NewRepo(DB *gorm.DB) Repository {
-	return &repository{DB: DB}
+func NewCategoryRepo(DB *gorm.DB) CategoryRepository {
+	return &categoryRepository{DB: DB}
 }
 
-func (r *repository) Create(category model.Category) (*model.Category, error) {
+func (r *categoryRepository) Create(category model.Category) (*model.Category, error) {
 	if err := r.DB.Save(&category).Error; err != nil {
 		return nil, err
 	}
 	return &category, nil
 }
 
-func (r *repository) GetAll() (*[]model.Category, error) {
+func (r *categoryRepository) GetAll() (*[]model.Category, error) {
 	var categories []model.Category
 	if err := r.DB.Find(&categories).Error; err != nil {
 		return nil, err
@@ -39,7 +39,7 @@ func (r *repository) GetAll() (*[]model.Category, error) {
 	return &categories, nil
 }
 
-func (r *repository) GetById(id uint) (*model.Category, error) {
+func (r *categoryRepository) GetById(id uint) (*model.Category, error) {
 	var category model.Category
 	if err := r.DB.Where("id = ?", id).Find(&category).Error; err != nil {
 		return nil, err
@@ -47,7 +47,7 @@ func (r *repository) GetById(id uint) (*model.Category, error) {
 	return &category, nil
 }
 
-func (r *repository) Update(id uint, updatedData map[string]interface{}) (*model.Category, error) {
+func (r *categoryRepository) Update(id uint, updatedData map[string]interface{}) (*model.Category, error) {
 	if category, _ := r.GetById(id); category.ID <= 0 {
 		return nil, errors.New("data not found")
 	}
@@ -63,7 +63,7 @@ func (r *repository) Update(id uint, updatedData map[string]interface{}) (*model
 	return &newCategory, nil
 }
 
-func (r *repository) Delete(id uint) (bool, error) {
+func (r *categoryRepository) Delete(id uint) (bool, error) {
 	if category, _ := r.GetById(id); category.ID <= 0 {
 		return false, errors.New("data not found")
 	}

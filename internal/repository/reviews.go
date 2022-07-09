@@ -1,4 +1,4 @@
-package reviews
+package repository
 
 import (
 	"errors"
@@ -8,7 +8,7 @@ import (
 	"gorm.io/gorm"
 )
 
-type Repository interface {
+type ReviewRepository interface {
 	Create(review model.Review) (*model.Review, error)
 	GetAll() (*[]model.Review, error)
 	GetById(id uint) (*model.Review, error)
@@ -16,22 +16,22 @@ type Repository interface {
 	Delete(id uint) (bool, error)
 }
 
-type repository struct {
+type reviewRepository struct {
 	DB *gorm.DB
 }
 
-func NewRepo(DB *gorm.DB) Repository {
-	return &repository{DB: DB}
+func NewReveiewRepo(DB *gorm.DB) ReviewRepository {
+	return &reviewRepository{DB: DB}
 }
 
-func (r *repository) Create(review model.Review) (*model.Review, error) {
+func (r *reviewRepository) Create(review model.Review) (*model.Review, error) {
 	if err := r.DB.Save(&review).Error; err != nil {
 		return nil, err
 	}
 	return &review, nil
 }
 
-func (r *repository) GetAll() (*[]model.Review, error) {
+func (r *reviewRepository) GetAll() (*[]model.Review, error) {
 	var categories []model.Review
 	if err := r.DB.Find(&categories).Error; err != nil {
 		return nil, err
@@ -39,7 +39,7 @@ func (r *repository) GetAll() (*[]model.Review, error) {
 	return &categories, nil
 }
 
-func (r *repository) GetById(id uint) (*model.Review, error) {
+func (r *reviewRepository) GetById(id uint) (*model.Review, error) {
 	var review model.Review
 	if err := r.DB.Where("id = ?", id).Find(&review).Error; err != nil {
 		return nil, err
@@ -47,7 +47,7 @@ func (r *repository) GetById(id uint) (*model.Review, error) {
 	return &review, nil
 }
 
-func (r *repository) Update(id uint, updatedData map[string]interface{}) (*model.Review, error) {
+func (r *reviewRepository) Update(id uint, updatedData map[string]interface{}) (*model.Review, error) {
 	if review, _ := r.GetById(id); review.ID <= 0 {
 		return nil, errors.New("data not found")
 	}
@@ -63,7 +63,7 @@ func (r *repository) Update(id uint, updatedData map[string]interface{}) (*model
 	return &newReview, nil
 }
 
-func (r *repository) Delete(id uint) (bool, error) {
+func (r *reviewRepository) Delete(id uint) (bool, error) {
 	if review, _ := r.GetById(id); review.ID <= 0 {
 		return false, errors.New("data not found")
 	}

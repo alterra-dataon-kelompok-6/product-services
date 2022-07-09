@@ -1,28 +1,28 @@
 package products
 
 import (
+	"log"
 	"net/http"
-	"strconv"
 
 	"product-services/internal/apps/categories"
+	"product-services/internal/dto"
 	"product-services/internal/factory"
-	model "product-services/internal/models"
 
 	"github.com/labstack/echo/v4"
 )
 
 type handler struct {
-	repository Repository
+	service Service
 }
 
 func NewHandler(f *factory.Factory) *handler {
 	return &handler{
-		repository: NewRepo(f.DB),
+		service: NewService(f),
 	}
 }
 
 func (h handler) GetAll(e echo.Context) error {
-	products, err := h.repository.GetAll()
+	products, err := h.service.GetAll()
 
 	if err != nil || len(*products) <= 0 {
 		return e.JSON(http.StatusNotFound, map[string]interface{}{
@@ -38,8 +38,13 @@ func (h handler) GetAll(e echo.Context) error {
 }
 
 func (h handler) GetById(e echo.Context) error {
-	id, _ := strconv.Atoi(e.Param("id"))
-	product, err := h.repository.GetById(uint(id))
+	// id, _ := strconv.Atoi(e.Param("id"))
+	var payload dto.ProductRequestParams
+
+	if err := (&echo.DefaultBinder{}).BindPathParams(e, &payload); err != nil {
+		log.Println(err)
+	}
+	product, err := h.service.GetById(payload)
 	if err != nil || product.ID == 0 {
 		return e.JSON(http.StatusNotFound, map[string]interface{}{
 			"status":  false,
@@ -62,14 +67,14 @@ func (h handler) GetById(e echo.Context) error {
 }
 
 func (h handler) Create(e echo.Context) error {
-	var newProduct model.Product
-	if err := e.Bind(&newProduct); err != nil {
+	var payload dto.ProductRequestBodyCreate
+	if err := e.Bind(&payload); err != nil {
 		return e.JSON(http.StatusBadRequest, map[string]interface{}{
 			"status":  false,
 			"message": "invalid data",
 		})
 	}
-	product, err := h.repository.Create(newProduct)
+	product, err := h.service.Create(payload)
 	if err != nil {
 		return e.JSON(http.StatusBadRequest, map[string]interface{}{
 			"status":  false,
@@ -83,17 +88,31 @@ func (h handler) Create(e echo.Context) error {
 }
 
 func (h handler) Update(e echo.Context) error {
-	id, _ := strconv.Atoi(e.Param("id"))
-	var updatedData map[string]interface{} = make(map[string]interface{})
+	// id, _ := strconv.Atoi(e.Param("id"))
+	var id dto.ProductRequestParams
+	var payload dto.ProductRequestBodyUpdate
 
-	if err := e.Bind(&updatedData); err != nil {
+	if err := (&echo.DefaultBinder{}).BindPathParams(e, &id); err != nil {
+		log.Println(err)
+	}
+
+	if err := e.Bind(&payload); err != nil {
 		return e.JSON(http.StatusBadRequest, map[string]interface{}{
 			"status":  false,
 			"message": "invalid data",
 		})
 	}
 
-	product, err := h.repository.Update(uint(id), updatedData)
+	// var updatedData map[string]interface{} = make(map[string]interface{})
+
+	// if err := e.Bind(&updatedData); err != nil {
+	// 	return e.JSON(http.StatusBadRequest, map[string]interface{}{
+	// 		"status":  false,
+	// 		"message": "invalid data",
+	// 	})
+	// }
+
+	product, err := h.service.Update(id.ID, payload)
 	if err != nil {
 		return e.JSON(http.StatusBadRequest, map[string]interface{}{
 			"status":  false,
@@ -108,8 +127,13 @@ func (h handler) Update(e echo.Context) error {
 }
 
 func (h handler) Delete(e echo.Context) error {
-	id, _ := strconv.Atoi(e.Param("id"))
-	_, err := h.repository.Delete(uint(id))
+	// id, _ := strconv.Atoi(e.Param("id"))
+	var payload dto.ProductRequestParams
+
+	if err := (&echo.DefaultBinder{}).BindPathParams(e, &payload); err != nil {
+		log.Println(err)
+	}
+	_, err := h.service.Delete(payload)
 	if err != nil {
 		return e.JSON(http.StatusBadRequest, map[string]interface{}{
 			"status":  false,

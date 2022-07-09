@@ -1,6 +1,7 @@
 package categories
 
 import (
+	"errors"
 	"log"
 
 	"product-services/internal/dto"
@@ -41,7 +42,7 @@ func (s service) Create(payload dto.CategoryRequestBody) (*model.Category, error
 func (s service) GetAll() (*[]model.Category, error) {
 	categories, err := s.CategoryRepository.GetAll()
 	if err != nil || len(*categories) <= 0 {
-		return nil, err
+		return nil, errors.New("data not found")
 	}
 	return categories, nil
 }
@@ -49,7 +50,8 @@ func (s service) GetAll() (*[]model.Category, error) {
 func (s service) GetById(payload dto.CategoryRequestParams) (*model.Category, error) {
 	category, err := s.CategoryRepository.GetById(payload.ID)
 	if err != nil || category.ID == 0 {
-		return nil, err
+		log.Println(err, category, payload)
+		return nil, errors.New("data not found")
 	}
 	return category, nil
 }

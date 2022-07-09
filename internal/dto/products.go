@@ -1,21 +1,21 @@
 package dto
 
 type ProductRequestParams struct {
-	ID uint
+	ID uint `json:"id" param:"id" query:"id" form:"id" xml:"id"`
 }
 
 type ProductRequestBodyCreate struct {
 	CategoryID  uint   `json:"category_id" validate:"required"`
 	Name        string `json:"name" validate:"required"`
-	Stock       int    `json:"stock" validate:"required"`
-	Price       int    `json:"price" validate:"required"`
+	Stock       uint   `json:"stock" validate:"required"`
+	Price       uint   `json:"price" validate:"required"`
 	Description string `json:"description"`
 }
 
 type ProductRequestBodyUpdate struct {
 	CategoryID  *uint   `json:"category_id"`
 	Name        *string `json:"name"`
-	Stock       *int    `json:"stock"`
-	Price       *int    `json:"price"`
+	Stock       *uint   `json:"stock"`
+	Price       *uint   `json:"price"`
 	Description *string `json:"description"`
 }

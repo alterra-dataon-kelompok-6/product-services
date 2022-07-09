@@ -12,6 +12,7 @@ type ProductRepository interface {
 	Create(product model.Product) (*model.Product, error)
 	GetAll() (*[]model.Product, error)
 	GetById(id uint) (*model.Product, error)
+	GetByCategoryId(category_id uint) (*[]model.Product, error)
 	Update(id uint, product map[string]interface{}) (*model.Product, error)
 	Delete(id uint) (bool, error)
 }
@@ -37,6 +38,14 @@ func (r *productRepository) GetAll() (*[]model.Product, error) {
 		return nil, err
 	}
 	return &products, nil
+}
+
+func (r *productRepository) GetByCategoryId(category_id uint) (*[]model.Product, error) {
+	var product []model.Product
+	if err := r.DB.Where("category_id = ?", category_id).Find(&product).Error; err != nil {
+		return nil, err
+	}
+	return &product, nil
 }
 
 func (r *productRepository) GetById(id uint) (*model.Product, error) {

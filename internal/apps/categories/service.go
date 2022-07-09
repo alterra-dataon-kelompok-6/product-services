@@ -60,7 +60,7 @@ func (s service) GetById(payload dto.CategoryRequestParams) (*dto.CategoryRespon
 	result := new(dto.CategoryResponseGetById)
 	result.Category = *category
 
-	products, err := ProductRepo.GetAll()
+	products, err := ProductRepo.GetByCategoryId(category.ID)
 	if err != nil {
 		return nil, err
 	}
